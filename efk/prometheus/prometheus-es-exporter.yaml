@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: es-exporter
+  namespace: logging
+  labels:
+    component: es-exporter
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: es-exporter
+    spec:
+      containers:
+      - name: es-exporter
+        image: justwatch/elasticsearch_exporter:1.0.1
+        command:
+          - "/bin/elasticsearch_exporter"
+          - "-es.uri=http://elasticsearch:9200"
+          - "-es.all=true"
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        ports:
+        - containerPort: 9108
+          name: es-exporter
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: logging
+  name: es-exporter
+  labels:
+    component: es-exporter
+spec:
+  ports:
+  - name: es-exporter
+    port: 9108
+    protocol: TCP
+  selector:
+    component: es-exporter

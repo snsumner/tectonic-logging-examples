@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: logging
+  annotations:
+  name: kibana
+spec:
+  rules:
+  - host: kibana.logging.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kibana
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: logging
+  annotations:
+  name: prometheus
+spec:
+  - host: prometheus.logging.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: prometheus
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: logging
+  annotations:
+  name: elasticsearch
+spec:
+  rules:
+  - host: elasticsearch.logging.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: elasticsearch
+          servicePort: 9200

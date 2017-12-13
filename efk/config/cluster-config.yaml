@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: es-logging
+  namespace: logging
+data:
+  cluster.name: "es-logging"
+  cluster.master_count: "2"
+  data_nodes.java_opts: -Xms512m -Xmx512m
+  data_nodes.ingest: "false"
+  data_nodes.store_data: "true"
+  data_nodes.http_enable: "false"
+  data_nodes.service_dns: "elasticsearch-data"
+  client_nodes.java_opts: -Xms1024m -Xmx1024m
+  client_nodes.ingest: "true"
+  client_nodes.store_data: "false"
+  client_nodes.http_enable: "true"
+  client_nodes.service_dns: "elasticsearch"
+  master_nodes.java_opts: -Xms256m -Xmx256m
+  master_nodes.ingest: "false"
+  master_nodes.store_data: "false"
+  master_nodes.http_enable: "false"
+  master_nodes.service_dns: "elasticsearch-discovery"

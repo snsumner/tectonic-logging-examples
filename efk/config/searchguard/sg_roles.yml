@@ -1,0 +1,30 @@
+admin:
+  cluster:
+    - ALL
+  indices:
+    "*":
+      "*":
+        - ALL
+
+kibana_user:
+  cluster:
+    - MONITOR
+    - CRUD
+  indices:
+    "*":
+      "*":
+        - ALL
+
+logstash_user:
+  cluster:
+    - ES_INPUT
+  indices:
+    'logstash-*':
+      '*':
+        - INDEX_OWNER
+
+read_only:
+  indices:
+    '*':
+      '*':
+        - READ

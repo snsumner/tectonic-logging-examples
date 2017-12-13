@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ServiceMonitor
+metadata:
+  name: es-exporter
+  namespace: logging
+  labels:
+    component: logging-metrics
+    name: es-exporter
+spec:
+  selector:
+    component: es-exporter
+  endpoints:
+  - port: es-exporter

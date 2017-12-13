@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-appteam
+  namespace: tectonic-system
+  labels:
+    component: kibana-appteam
+spec:
+  selector:
+    component: kibana-appteam
+  ports:
+  - name: http
+    port: 5601
+    targetPort: kibana
+    protocol: TCP

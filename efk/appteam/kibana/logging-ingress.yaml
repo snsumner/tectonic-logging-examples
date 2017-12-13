@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/use-port-in-redirects: "true"
+    kubernetes.io/ingress.class: tectonic
+  name: logging-appteam-ingress
+  namespace: tectonic-system
+spec:
+  rules:
+  - host: tectonic.dev.k8s.ford.com
+    http:
+      paths:
+      - backend:
+          serviceName: logging-appteam-auth
+          servicePort: 4180
+        path: /logging-appteam
+  tls:
+  - hosts:
+    - tectonic.dev.k8s.ford.com
+    secretName: tectonic-ingress-tls-secret

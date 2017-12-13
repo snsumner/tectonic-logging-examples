@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: logging-privileged
+spec:
+  allowedCapabilities:
+  - IPC_LOCK
+  - SYS_RESOURCE
+  fsGroup:
+    rule: RunAsAny
+  privileged: true
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - 'secret'
+  - 'persistentVolumeClaim'
+  - 'emptyDir'
+  - 'hostPath'

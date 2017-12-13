@@ -1,0 +1,95 @@
+apiVersion: v1
+data:
+  fluentd-standalone.conf: |
+    <match fluent.**>
+      @type null
+    </match>
+    # include other configs
+    @include systemd.conf
+    @include kubernetes.conf
+    @include output.conf
+  fluentd.conf: |
+    # Use the config specified by the FLUENTD_CONFIG environment variable, or
+    # default to fluentd-standalone.conf
+    @include "#{ENV['FLUENTD_CONFIG'] || 'fluentd-standalone.conf'}"
+  kubernetes.conf: |
+    # container logging config
+    <source>
+      @type tail
+      path /var/log/containers/*.log
+      pos_file /var/log/kubernetes.log.pos
+      time_format %Y-%m-%dT%H:%M:%S.%NZ
+      tag kubernetes.*
+      format json
+    </source>
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      verify_ssl false
+    </filter>
+    <filter kubernetes.**>
+      @type record_transformer
+      enable_ruby
+      <record>
+        event ${record}
+      </record>
+      renew_record
+      auto_typecast
+    </filter>
+  systemd.conf: |
+    # systemd config
+    <source>
+      @type systemd
+      path /var/log/journal
+      <storage>
+        @type local
+        persistent true
+        path /var/log/systemd-proxy.pos
+      </storage>
+      tag systemd
+      strip_underscores true
+    </source>
+  output.conf: |
+    <match kubernetes.**> 
+      @type copy
+      <store>
+        @type splunk-http-eventcollector
+        all_items true
+        server SPLUNK_SERVER:PORT
+        token SPLUNK_TOKEN
+        index SPLUNK_INDEX
+        protocol https
+        verify false
+        sourcetype _json
+        source kubernetes
+        buffer_type memory
+        buffer_queue_limit 16
+        buffer_chunk_limit 8m
+        flush_interval 5s
+      </store>
+    </match>
+    <match systemd.**>
+      @type copy
+      <store>
+      @type splunk-http-eventcollector
+      protocol https
+      all_items true
+      verify false
+      server SPLUNK_SERVER:PORT
+      token SPLUNK_TOKEN
+      index SPLUNK_INDEX
+      sourcetype _json
+      source systemd
+      buffer_type memory
+      buffer_queue_limit 16
+      buffer_chunk_limit 8m
+      flush_interval 5s
+      </store>
+    </match>
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluentd
+  name: fluentd-config
+  namespace: logging
+  resourceVersion: null
+  selfLink: /api/v1/namespaces/logging/configmaps/fluentd-config

@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: Prometheus
+metadata:
+  name: prometheus
+  namespace: logging
+spec:
+  namespace: logging
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      component: logging-metrics
+  version: v1.7.0
+  resources:
+    requests:
+      memory: 400Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: logging
+spec:
+  ports:
+  - name: web
+    targetPort: web
+    port: 80
+    protocol: TCP
+    targetPort: web
+  selector:
+    prometheus: prometheus
